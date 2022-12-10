@@ -1,0 +1,1 @@
+# SPPU-Comp-SE-2019-Course-Pattern-OOPCGL-Laboratory-Practicals

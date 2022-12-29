@@ -3,165 +3,154 @@ Write C++ program to implement Cohen Southerland line clipping algorithm.
 */
 
 
-#include <conio.h>
-#include <iostream>
-#include <direct.h>
-#include <graphics.h>
-#include <stdlib.h>
+#include<iostream>
+#include<stdlib.h>
+#include<math.h>
+#include<graphics.h>
+#include<dos.h>
 using namespace std;
-class point
+typedef struct coordinate
 {
-public:
-    int x;
-    int y;
-};
-class poly
-{
-private:
-    point p[20];
-    int inter[20], x, y;
-    int v, xmin, ymin, xmax, ymax;
+    int x,y;
+    char code[4];
+}PT;
 
-public:
-    int c;
-    void read();
-    void calcs();
-    void display();
-    void ints(float);
-    void sort(int);
-};
-void poly::read()
-{
-    int i;
-    cout << "\n Scan Fill Algorithm";
-    cout << "\n Enter The Vertices Of Polygon : ";
-    cin >> v;
-    if (v > 2)
-    {
-        for (i = 0; i < v; i++)
-        {
-            cout << "\n Enter The Co-Ordinate No. : " << i + 1 << " : ";
-            cout << "\n\tx" << (i + 1) << " = ";
-            cin >> p[i].x;
-            cout << "\n\ty" << (i + 1) << " = ";
-            cin >> p[i].y;
-        }
-        p[i].x = p[0].x;
-        p[i].y = p[0].y;
-    }
-    else
-        cout << "\n Enter The Valid No. Of Vertices ";
-}
-void poly::calcs()
-{
-    for (int i = 0; i < v; i++)
-    {
-        if (xmin > p[i].x)
-            xmin = p[i].x;
-        if (xmax < p[i].x)
-            xmax = p[i].x;
-        if (ymin > p[i].y)
-            ymin = p[i].y;
-        if (ymax < p[i].y)
-            ymax = p[i].y;
-    }
-}
-void poly::display()
-{
-    int ch1;
-    char ch = 'y';
-    float s, s2;
-    do
-    {
-        cout << "\n\nMENU : ";
-        cout << "\n\n\t1 . Scan Line Fill ";
-        cout << "\n\n\t2 . Exit ";
-        cout << "\n\nEnter Your Choice : ";
-        cin >> ch1;
-        switch (ch1)
-        {
-        case 1:
-            s = ymin + 0.01;
-            delay(100);
-            cleardevice();
-            while (s <= ymax)
-            {
-                ints(s);
-                sort(s);
-                s++;
-            }
-            break;
-        case 2:
-            exit(0);
-        }
-        cout << "Do You Want To Continue ?: ";
-        cin >> ch;
-    } while (ch == 'y' || ch == 'Y');
-}
-void poly::ints(float z)
-{
-    int x1, x2, y1, y2, temp;
-    c = 0;
-    for (int i = 0; i < v; i++)
-    {
-        x1 = p[i].x;
-        y1 = p[i].y;
-        x2 = p[i + 1].x;
-        y2 = p[i + 1].y;
-        if (y2 < y1)
-        {
-            temp = x1;
-            x1 = x2;
-            x2 = temp;
-            temp = y1;
-            y1 = y2;
-            y2 = temp;
-        }
-        if (z <= y2 && z >= y1)
-        {
-            if ((y1 - y2) == 0)
-                x = x1;
-            else
-            {
-                x = ((x2 - x1) * (z - y1)) / (y2 - y1);
-                x = x + x1;
-            }
-            if (x <= xmax && x >= xmin)
-            {
-                inter[c++] = x;
-            }
-        }
-    }
-}
-void poly::sort(int z)
-{
-    int temp, j, i;
-    for (i = 0; i < v; i++)
-    {
-        line(p[i].x, p[i].y, p[i + 1].x, p[i + 1].y);
-    }
-    delay(100);
-    for (i = 0; i < c; i += 2)
-    {
-        delay(100);
-        line(inter[i], z, inter[i + 1], z);
-    }
-}
+void drawwindow();
+void drawline(PT p1,PT p2);
+PT setcode(PT p);
+int visibility(PT p1,PT p2);
+PT resetendpt(PT p1,PT p2);
+
 int main()
 {
-    int cl;
-    int gd = DETECT, gm;
-    initgraph(&gd, &gm, NULL);
+    int gd=DETECT,v,gm;
+    PT p1,p2,p3,p4,ptemp;
+    cout<<"\nEnter x1 and y1\n";
+    cin>>p1.x>>p1.y;
+    cout<<"\nEnter x2 and y2\n";
+    cin>>p2.x>>p2.y;
+    initgraph(&gd,&gm,NULL);
+    drawwindow();
+    delay(500);
+    drawline(p1,p2);
+    delay(500);
     cleardevice();
-    poly x;
-    x.read();
-    x.calcs();
-    cleardevice();
-    cout << "\n\tEnter The Colour You Want :(In Range From 0 To 15)-->";
-    cin >> cl;
-    setcolor(cl);
-    x.display();
+    delay(500);
+    p1=setcode(p1);
+    p2=setcode(p2);
+    v=visibility(p1,p2);
+    delay(500);
+    switch(v)
+    {
+    case 0: drawwindow();
+        delay(500);
+        drawline(p1,p2);
+        break;
+    case 1: drawwindow();
+        delay(500);
+        break;
+    case 2: p3=resetendpt(p1,p2);
+        p4=resetendpt(p2,p1);
+        drawwindow();
+        delay(500);
+        drawline(p3,p4);
+        break;
+    }
+    delay(5000);
     closegraph();
-    getch();
-    return 0;
+}
+
+void drawwindow()
+{
+    line(150,100,450,100);
+    line(450,100,450,350);
+    line(450,350,150,350);
+    line(150,350,150,100);
+}
+
+void drawline(PT p1,PT p2)
+{
+    line(p1.x,p1.y,p2.x,p2.y);
+}
+
+PT setcode(PT p)
+{
+    PT ptemp;
+    if(p.y<100)
+        ptemp.code[0]='1';
+    else
+        ptemp.code[0]='0';
+    if(p.y>350)
+        ptemp.code[1]='1';
+    else
+        ptemp.code[1]='0';
+    if(p.x>450)
+        ptemp.code[2]='1';
+    else
+        ptemp.code[2]='0';
+    if(p.x<150)
+        ptemp.code[3]='1';
+    else
+        ptemp.code[3]='0';
+    ptemp.x=p.x;
+    ptemp.y=p.y;
+    return(ptemp);
+}
+
+int visibility(PT p1,PT p2)
+{
+    int i,flag=0;
+    for(i=0;i<4;i++)
+    {
+    if((p1.code[i]!='0') || (p2.code[i]!='0'))
+        flag=1;
+    }
+    if(flag==0)
+        return(0);
+    for(i=0;i<4;i++)
+    {
+        if((p1.code[i]==p2.code[i]) && (p1.code[i]=='1'))
+            flag='0';
+    }
+    if(flag==0)
+        return(1);
+    return(2);
+}
+
+PT resetendpt(PT p1,PT p2)
+{
+    PT temp;
+    int x,y,i;
+    float m,k;
+    if(p1.code[3]=='1')
+        x=150;
+    if(p1.code[2]=='1')
+        x=450;
+    if((p1.code[3]=='1') || (p1.code[2]=='1'))
+    {
+        m=(float)(p2.y-p1.y)/(p2.x-p1.x);
+        k=(p1.y+(m*(x-p1.x)));
+        temp.y=k;
+        temp.x=x;
+        for(i=0;i<4;i++)
+            temp.code[i]=p1.code[i];
+        if(temp.y<=350 && temp.y>=100)
+        return (temp);
+    }
+    if(p1.code[0]=='1')
+        y=100;
+    if(p1.code[1]=='1')
+        y=350;
+    if((p1.code[0]=='1') || (p1.code[1]=='1'))
+    {
+        m=(float)(p2.y-p1.y)/(p2.x-p1.x);
+        k=(float)p1.x+(float)(y-p1.y)/m;
+        temp.x=k;
+        temp.y=y;
+        for(i=0;i<4;i++)
+            temp.code[i]=p1.code[i];
+        return(temp);
+    }
+    else
+        return(p1);
 }

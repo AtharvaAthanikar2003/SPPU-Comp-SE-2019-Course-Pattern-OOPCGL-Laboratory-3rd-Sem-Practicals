@@ -2,52 +2,59 @@
 C) Write OpenGL program to draw Sun Rise and Sunset.
 */
 
-#include <iostream>
 #include <graphics.h>
-#include <math.h>
-#include <cstdlib>
+#include <iostream>
 using namespace std;
-void move(int j, int h, int &x, int &y)
-{
-    if (j == 1)
-        y -= h;
-    else if (j == 2)
-        x += h;
-    else if (j == 3)
-        y += h;
-    else if (j == 4)
-        x -= h;
-    lineto(x, y);
-}
-void hilbert(int r, int d, int l, int u, int i, int h, int &x, int &y)
-{
-    if (i > 0)
-    {
-        i--;
-        hilbert(d, r, u, l, i, h, x, y);
-        move(r, h, x, y);
-        hilbert(r, d, l, u, i, h, x, y);
-        move(d, h, x, y);
-        hilbert(r, d, l, u, i, h, x, y);
-        move(l, h, x, y);
-        hilbert(u, l, d, r, i, h, x, y);
-    }
-}
 int main()
 {
-
-    int n, x1, y1;
-    int x0 = 50, y0 = 150, x, y, h = 10, r = 2, d = 3, l = 4, u = 1;
-    cout << "Give the value of n=";
-    cin >> n;
-    x = x0;
-    y = y0;
-    int driver = DETECT, mode = 0;
-    initgraph(&driver, &mode, NULL);
-    moveto(x, y);
-    hilbert(r, d, l, u, n, h, x, y);
-    delay(10000);
-    
+    int gd = DETECT,gm;
+    initgraph(&gd, &gm, NULL);
+    int midx, midy, r = 10;
+    midx = getmaxx() / 2;
+    cout << midx;
+    setbkcolor(BLUE);
+    while (r <= 100)
+    {
+        cleardevice();
+        line(0, 310, 160, 150);
+        line(160, 150, 320, 310);
+        line(320, 310, 480, 150);
+        line(480, 150, 640, 310);
+        line(0, 310, 640, 310);
+        arc(320, 310, 30, 150, r);
+        setfillstyle(SOLID_FILL, 8);
+        floodfill(160, 200, WHITE);
+        floodfill(480, 200, WHITE);
+        setfillstyle(SOLID_FILL, BLUE);
+        floodfill(50, 50, WHITE);
+        setfillstyle(SOLID_FILL, GREEN);
+        floodfill(400, 400, 15);
+        setfillstyle(SOLID_FILL, YELLOW);
+        floodfill(320, 309, 15);
+        delay(100);
+        r += 2;
+    }
+    while (r >= 10)
+    {
+        cleardevice();
+        line(0, 310, 160, 150);
+        line(160, 150, 320, 310);
+        line(320, 310, 480, 150);
+        line(480, 150, 640, 310);
+        line(0, 310, 640, 310);
+        arc(320, 310, 30, 150, r);
+        setfillstyle(SOLID_FILL, 8);
+        floodfill(160, 200, WHITE);
+        floodfill(480, 200, WHITE);
+        setfillstyle(SOLID_FILL, BLUE);
+        floodfill(50, 50, WHITE);
+        setfillstyle(SOLID_FILL, GREEN);
+        floodfill(400, 400, 15);
+        setfillstyle(SOLID_FILL, YELLOW);
+        floodfill(320, 309, 15);
+        delay(100);
+        r -= 2;
+    }
+    getch();
     closegraph();
-    return 0;
 }

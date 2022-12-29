@@ -2,6 +2,7 @@
 C) Write OpenGL program to draw Sun Rise and Sunset.
 */
 
+
 #include <graphics.h>
 #include <iostream>
 using namespace std;
